@@ -16,7 +16,7 @@ function main(): bool {
         return false;
     }
     else {
-        include "./pages/home.php";
+        include "./pages/home.html";
     }
     return true;
 }
