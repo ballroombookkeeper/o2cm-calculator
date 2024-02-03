@@ -8,17 +8,26 @@ This was created as a replacement to http://ballroom.union.rpi.edu/calculator wh
 ## Dependencies
 
 - php
+- node/npm
+
+## Building
+
+```sh
+$ cd client
+$ npm run build
+$ cd ..
+```
 
 ## Running locally
-
-### Install php
-
-https://www.php.net/manual/en/install.php
 
 ### Run server
 
 ```sh
-$ php -S localhost:8080
+$ php -S localhost:8080 server/router.php
 ```
 
 And then open https://localhost:8080
+
+## Deployment
+
+TBD

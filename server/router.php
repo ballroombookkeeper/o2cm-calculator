@@ -12,11 +12,13 @@ function main(): bool {
     if ((isset($uri_split[1]) && $uri_split[1] == 'api')) {
         echo "Welcome to the API";
     }
-    else if (is_asset($uri)) {
-        return false;
+    else if (strlen($uri) > 1) {
+        $path_to_include = "./client/build" . $uri;
+        header("Content-type: " . mime_content_type($uri));
+        readfile($path_to_include);
     }
     else {
-        include "./pages/home.html";
+        include "./client/build/index.html";
     }
     return true;
 }
