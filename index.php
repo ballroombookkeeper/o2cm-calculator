@@ -1,38 +1,11 @@
-<!doctype html>
-<html lang="en">
-  <head profile="http://www.w3.org/2005/10/profile">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <meta name="description" content="" />
-    <meta name="keywords" content="" />
-    <!-- <link rel="icon" type="image/x-icon" href="./site_images/favicon.ico" /> -->
-    <link rel="stylesheet" href="./css/style.css">
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title></title>
-    <link href='http://fonts.googleapis.com/css?family=Raleway:300' rel='stylesheet' type='text/css'>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-  </head>
+<?php
 
-  <body>
-    <div class="container">
+$uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+$uri_exploded = explode('/', $uri);
 
-      <!-- CONTENT -->
-      <?php
-        echo "Hello world"
-      ?>
-      <!-- END CONTENT -->
- 
-    </div>
-
-    <!-- FOOTER -->
-    <div class="container" id="footer">
-      <hr>
-      <div class="text-center">
-        Footer
-      </div>
-    </div>
-    <!-- END FOOTER -->
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  </body>
-</html>
+if ((isset($uri_exploded[1]) && $uri_exploded[1] == 'api')) {
+    echo "Welcome to the API";
+}
+else {
+    include "./pages/home.php";    
+}
