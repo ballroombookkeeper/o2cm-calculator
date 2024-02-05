@@ -41,7 +41,7 @@ function main(): bool {
     $path_info = pathinfo($uri);
 
     if ((isset($uri_split[1]) && $uri_split[1] == 'api')) {
-        echo "Welcome to the API";
+        require "./server/api/api.php";
     }
     else if (strlen($uri) > 1) {
         $path_to_include = "./client/build" . $uri;
@@ -52,7 +52,7 @@ function main(): bool {
         readfile($path_to_include);
     }
     else {
-        include "./client/build/index.html";
+        require "./client/build/index.html";
     }
     return true;
 }
