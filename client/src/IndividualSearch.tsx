@@ -16,7 +16,7 @@ class IndividualSearch extends React.Component<IProps, IState> {
     render() {
         return (
             <div className="individual-search">
-                <form id="individualSearch" onSubmit={this.handleSubmit}>
+                <form id="individualSearch" onSubmit={this.handleSubmit.bind(this)}>
                     <div className="input-group">
                         <input type="text" className="form-control" placeholder="First Name" name="fname" />
                         <input type="text" className="form-control" placeholder="Last Name" name="lname" />
@@ -37,7 +37,7 @@ class IndividualSearch extends React.Component<IProps, IState> {
 
         if (fname && lname) {
             getO2cmResults(fname, lname)
-                .then(console.log);  // TODO: Use handler passed in from props
+                .then(this.props.onSearch);
         }
     }
 };

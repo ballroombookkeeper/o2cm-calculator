@@ -22,7 +22,7 @@ export function getO2cmResults(firstName: string, lastName: string): Promise<o2c
     // TODO: Sanitize inputs
     return fetch(`/api/o2cm/results?fname=${firstName}&lname=${lastName}`)
         .then(res => res.json())
-        .then((res: any[]) => {
+        .then((res: raw_o2cm_result[]) => {
             return res.map(rawResult => {
                 return {
                     name: rawResult.name,
