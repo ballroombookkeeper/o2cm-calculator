@@ -75,8 +75,8 @@ function is_o2cm_500($parsedPage): bool {
  * Returns
  * [
  *   {
- *      "competition": "name",
- *      "date": "MM-DD-YYYY",
+ *      "name": "competition name",
+ *      "date": "MM-DD-YY",
  *      "id": "abcYY",
  *      "events": [
  *        {
