@@ -11,6 +11,7 @@ interface IAppProps {
 
 interface IAppState {
     results: IndividualSearchResults | null;
+    isLoading: boolean;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
@@ -18,7 +19,8 @@ class App extends React.Component<IAppProps, IAppState> {
     constructor(props: IAppProps) {
         super(props);
         this.state = {
-            results: null
+            results: null,
+            isLoading: false
         };
     }
 
@@ -30,9 +32,9 @@ class App extends React.Component<IAppProps, IAppState> {
                 <div className="container">
                     <h1>YCN Calculator</h1>
 
-                    <IndividualSearch onSearch={this.handleSearch.bind(this)} />
+                    <IndividualSearch prepareSearch={this.prepareSearch.bind(this)} onSearch={this.handleSearch.bind(this)} />
 
-                    <IndividualResults initialResults={this.state.results}/>
+                    <IndividualResults isLoading={this.state.isLoading} initialResults={this.state.results}/>
 
                     <CalculatorInfo />
                 </div>
@@ -42,8 +44,15 @@ class App extends React.Component<IAppProps, IAppState> {
           );
     }
 
+    private prepareSearch() {
+        this.setState(state => ({
+            isLoading: true
+        }));
+    }
+
     private handleSearch(searchResults: IndividualSearchResults) {
         this.setState(state => ({
+            isLoading: false,
             results: searchResults
         }));
     }

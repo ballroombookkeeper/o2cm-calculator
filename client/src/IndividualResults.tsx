@@ -4,11 +4,13 @@ import "./IndividualResults.css";
 import { IndividualSearchResults } from "./IndividualSearch";
 
 interface IIndividualSearchProps {
-    initialResults: IndividualSearchResults | null
+    initialResults: IndividualSearchResults | null;
+    isLoading: boolean;
 }
 
 interface IIndividualSearchState {
-    initialResults: IndividualSearchResults | null
+    initialResults: IndividualSearchResults | null;
+    isLoading: boolean;
 }
 
 function capitalizeFirstLetter(inp: string): string {
@@ -19,11 +21,20 @@ class IndividualSearch extends React.Component<IIndividualSearchProps, IIndividu
 
     constructor(props: IIndividualSearchProps) {
         super(props);
-
+        this.state = {
+            initialResults: null,
+            isLoading: false
+        };
     }
 
     static getDerivedStateFromProps(props: IIndividualSearchProps, state: IIndividualSearchState) {
         // TODO: There are probably better ways to check if things have changed
+        if (props.isLoading !== state.isLoading) {
+            return {
+                isLoading: props.isLoading
+            };
+        }
+
         if (props.initialResults) {
             return {
                 initialResults: props.initialResults
@@ -33,6 +44,14 @@ class IndividualSearch extends React.Component<IIndividualSearchProps, IIndividu
     }
 
     render() {
+        if (this.props.isLoading) {
+            return (
+                <div className="individual-results">
+                    <progress value="null" />
+                </div>
+            );
+        }
+
         if (!this.props.initialResults) {
             return <div className="individual-results"></div>;
         }
