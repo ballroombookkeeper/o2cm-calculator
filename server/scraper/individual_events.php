@@ -85,7 +85,7 @@ function is_o2cm_500($parsedPage): bool {
  *      "events": [
  *        {
  *          "placement": 0,
- *          "event": "Amateur Age Level Event",
+ *          "name": "Amateur Age Level Event",
  *          "eventUrl": "http://..."
  *        },
  *        ...
@@ -153,7 +153,9 @@ function get_events(string $firstName, string $lastName): array {
 
             $competitionResult = new CompetitionResult();
             $competitionResult->placement = $placement;
-            $competitionResult->eventName = $text;
+
+            // TODO: Remove placement from name
+            $competitionResult->name = $text;
             $competitionResult->eventUrl = $eventUrl;
             array_push($lastCompetition->events, $competitionResult);
         }

@@ -1,6 +1,6 @@
 export interface o2cm_event {
     placement: number,
-    event: string,
+    name: string,
     eventUrl: string
 }
 
