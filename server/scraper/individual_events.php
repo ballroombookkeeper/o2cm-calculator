@@ -116,8 +116,9 @@ function get_events(string $firstName, string $lastName): array {
 
         // Parsed row is a competition header
         if (sizeof($competitionHeaders) > 0) {
-            $text = strtolower($competitionHeaders[0]->innertext);
-            if (strpos($text, "no results") !== false) {
+            $text = $competitionHeaders[0]->innertext;
+            $lowerText = strtolower($text);
+            if (strpos($lowerText, "no results") !== false) {
                 // TODO: ERROR?
                 return array();
             }
