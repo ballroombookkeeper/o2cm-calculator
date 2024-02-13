@@ -4,11 +4,17 @@ import { getO2cmResults, o2cm_result } from "./api";
 import "./IndividualSearch.css";
 
 interface IProps {
-    onSearch: (results: o2cm_result[]) => void;
+    onSearch: (results: IndividualSearchResults) => void;
 }
 
 interface IState {
 
+}
+
+export interface IndividualSearchResults {
+    firstName: string,
+    lastName: string,
+    results: o2cm_result[]
 }
 
 class IndividualSearch extends React.Component<IProps, IState> {
@@ -37,7 +43,14 @@ class IndividualSearch extends React.Component<IProps, IState> {
 
         if (fname && lname) {
             getO2cmResults(fname, lname)
-                .then(this.props.onSearch);
+                .then(results => {
+                    const ret = {
+                        firstName: fname,
+                        lastName: lname,
+                        results
+                    };
+                    this.props.onSearch(ret);
+                });
         }
     }
 };
