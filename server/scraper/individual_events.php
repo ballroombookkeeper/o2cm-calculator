@@ -13,7 +13,7 @@ class Competition {
 class CompetitionResult {
     public $placement;
 
-    public $eventName;
+    public $name;
 
     public $eventUrl;
 }
@@ -124,6 +124,9 @@ function get_events(string $firstName, string $lastName): array {
             else {
                 if ($compCount > 0) {
                     if (sizeof($lastCompetition->events) > 0) {
+                        $pattern = "/event=([a-z]+\d+)/";
+                        preg_match($pattern, $lastCompetition->events[0]->eventUrl, $matches, PREG_OFFSET_CAPTURE);
+                        $lastCompetition->id = $matches[1][0];
                         array_push($competitionList, $lastCompetition);
                     }
                     $lastCompetition = new Competition();
@@ -153,21 +156,20 @@ function get_events(string $firstName, string $lastName): array {
 
             $competitionResult = new CompetitionResult();
             $competitionResult->placement = $placement;
-
-            // TODO: Remove placement from name
-            $competitionResult->name = $text;
+            $competitionResult->name = $matches[3][0];
             $competitionResult->eventUrl = $eventUrl;
             array_push($lastCompetition->events, $competitionResult);
         }
     }
     if ($compCount > 0) {
         if (sizeof($lastCompetition->events) > 0) {
+            $pattern = "/event=([a-z]+\d+)/";
+            preg_match($pattern, $lastCompetition->events[0]->eventUrl, $matches, PREG_OFFSET_CAPTURE);
+            $lastCompetition->id = $matches[1][0];
             array_push($competitionList, $lastCompetition);
         }
         $lastCompetition = new Competition();
     }
-
-    // TODO: go through competitions and assign id based on first event's ID
 
     return $competitionList;
 }
