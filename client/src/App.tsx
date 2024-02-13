@@ -1,25 +1,61 @@
+import React from 'react';
 import './App.css';
-import Header from './Header';
-import Footer from './Footer';
-import IndividualSearch from './IndividualSearch';
 import CalculatorInfo from './CalculatorInfo';
+import Footer from './Footer';
+import Header from './Header';
+import IndividualResults from './IndividualResults';
+import IndividualSearch, { IndividualSearchResults } from './IndividualSearch';
 
-function App() {
-  return (
-    <div className="App">
-        <Header />
+interface IAppProps {
+}
 
-        <div className="container">
-            <h1>YCN Calculator</h1>
+interface IAppState {
+    results: IndividualSearchResults | null;
+    isLoading: boolean;
+}
 
-            <IndividualSearch />
+class App extends React.Component<IAppProps, IAppState> {
 
-            <CalculatorInfo />
-        </div>
+    constructor(props: IAppProps) {
+        super(props);
+        this.state = {
+            results: null,
+            isLoading: false
+        };
+    }
 
-        <Footer />
-    </div>
-  );
+    render() {
+        return (
+            <div className="App">
+                <Header />
+
+                <div className="container">
+                    <h1>YCN Calculator</h1>
+
+                    <IndividualSearch prepareSearch={this.prepareSearch.bind(this)} onSearch={this.handleSearch.bind(this)} />
+
+                    <IndividualResults isLoading={this.state.isLoading} initialResults={this.state.results}/>
+
+                    <CalculatorInfo />
+                </div>
+
+                <Footer />
+            </div>
+          );
+    }
+
+    private prepareSearch() {
+        this.setState(state => ({
+            isLoading: true
+        }));
+    }
+
+    private handleSearch(searchResults: IndividualSearchResults) {
+        this.setState(state => ({
+            isLoading: false,
+            results: searchResults
+        }));
+    }
 }
 
 export default App;

@@ -13,7 +13,7 @@ class Competition {
 class CompetitionResult {
     public $placement;
 
-    public $eventName;
+    public $name;
 
     public $eventUrl;
 }
@@ -61,8 +61,12 @@ function is_o2cm_500($parsedPage): bool {
     </html>
      */
 
-    // TODO: verify
-    $header = $parsedPage->find("div[id=header]")[0];
+    $headers = $parsedPage->find("div[id=header]");
+    if (sizeof($headers) <= 0) {
+        return false;
+    }
+
+    $header = $headers[0];
     if ($header && $header->innertext === "Server Error") {
         return true;
     }
@@ -75,13 +79,13 @@ function is_o2cm_500($parsedPage): bool {
  * Returns
  * [
  *   {
- *      "competition": "name",
- *      "date": "MM-DD-YYYY",
+ *      "name": "competition name",
+ *      "date": "MM-DD-YY",
  *      "id": "abcYY",
  *      "events": [
  *        {
  *          "placement": 0,
- *          "event": "Amateur Age Level Event",
+ *          "name": "Amateur Age Level Event",
  *          "eventUrl": "http://..."
  *        },
  *        ...
@@ -106,19 +110,24 @@ function get_events(string $firstName, string $lastName): array {
 
     $lastCompetition = new Competition();
     $competitionList = array();
+    $compCount = 0;
     foreach($personPage->find("td[class=t1n]") as $resultRow) {
         $competitionHeaders = $resultRow->find("b");
 
         // Parsed row is a competition header
         if (sizeof($competitionHeaders) > 0) {
-            $text = strtolower($competitionHeaders[0]->innertext);
-            if (strpos($text, "no results") !== false) {
+            $text = $competitionHeaders[0]->innertext;
+            $lowerText = strtolower($text);
+            if (strpos($lowerText, "no results") !== false) {
                 // TODO: ERROR?
                 return array();
             }
             else {
                 if ($compCount > 0) {
                     if (sizeof($lastCompetition->events) > 0) {
+                        $pattern = "/event=([a-z]+\d+)/";
+                        preg_match($pattern, $lastCompetition->events[0]->eventUrl, $matches, PREG_OFFSET_CAPTURE);
+                        $lastCompetition->id = $matches[1][0];
                         array_push($competitionList, $lastCompetition);
                     }
                     $lastCompetition = new Competition();
@@ -148,19 +157,20 @@ function get_events(string $firstName, string $lastName): array {
 
             $competitionResult = new CompetitionResult();
             $competitionResult->placement = $placement;
-            $competitionResult->eventName = $text;
+            $competitionResult->name = $matches[3][0];
             $competitionResult->eventUrl = $eventUrl;
             array_push($lastCompetition->events, $competitionResult);
         }
     }
     if ($compCount > 0) {
         if (sizeof($lastCompetition->events) > 0) {
+            $pattern = "/event=([a-z]+\d+)/";
+            preg_match($pattern, $lastCompetition->events[0]->eventUrl, $matches, PREG_OFFSET_CAPTURE);
+            $lastCompetition->id = $matches[1][0];
             array_push($competitionList, $lastCompetition);
         }
         $lastCompetition = new Competition();
     }
-
-    // TODO: go through competitions and assign id based on first event's ID
 
     return $competitionList;
 }
