@@ -61,8 +61,12 @@ function is_o2cm_500($parsedPage): bool {
     </html>
      */
 
-    // TODO: verify
-    $header = $parsedPage->find("div[id=header]")[0];
+    $headers = $parsedPage->find("div[id=header]");
+    if (sizeof($headers) <= 0) {
+        return false;
+    }
+
+    $header = $headers[0];
     if ($header && $header->innertext === "Server Error") {
         return true;
     }
@@ -106,6 +110,7 @@ function get_events(string $firstName, string $lastName): array {
 
     $lastCompetition = new Competition();
     $competitionList = array();
+    $compCount = 0;
     foreach($personPage->find("td[class=t1n]") as $resultRow) {
         $competitionHeaders = $resultRow->find("b");
 
