@@ -89,7 +89,8 @@ function get_events(string $firstName, string $lastName): array {
             else {
                 if ($compCount > 0) {
                     if (sizeof($lastCompetition->events) > 0) {
-                        $pattern = "/event=([a-z]+\d+)/";
+                        // TODO: Use real query parsing, not regex
+                        $pattern = "/event=([a-zA-Z]+\d+)/";
                         preg_match($pattern, $lastCompetition->events[0]->eventUrl, $matches, PREG_OFFSET_CAPTURE);
                         $lastCompetition->id = $matches[1][0];
                         array_push($competitionList, $lastCompetition);
@@ -128,7 +129,8 @@ function get_events(string $firstName, string $lastName): array {
     }
     if ($compCount > 0) {
         if (sizeof($lastCompetition->events) > 0) {
-            $pattern = "/event=([a-z]+\d+)/";
+            // TODO: Use real query parsing, not regex
+            $pattern = "/event=([a-zA-Z]+\d+)/";
             preg_match($pattern, $lastCompetition->events[0]->eventUrl, $matches, PREG_OFFSET_CAPTURE);
             $lastCompetition->id = $matches[1][0];
             array_push($competitionList, $lastCompetition);
