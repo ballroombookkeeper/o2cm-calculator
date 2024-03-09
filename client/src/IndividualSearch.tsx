@@ -1,7 +1,9 @@
-import React, { ReactHTML } from "react";
+import React from "react";
+import queryString from "query-string";
 
-import { getO2cmResults, o2cm_result } from "./api";
+import { O2cmCompResults, getO2cmResults } from "./api";
 import "./IndividualSearch.css";
+import { IndividualCompetitionResults, IndividualEventResults, IndividualSearchResults } from "./IndividualResultTypes";
 
 interface IProps {
     prepareSearch: () => void;
@@ -10,12 +12,6 @@ interface IProps {
 
 interface IState {
 
-}
-
-export interface IndividualSearchResults {
-    firstName: string,
-    lastName: string,
-    results: o2cm_result[]
 }
 
 class IndividualSearch extends React.Component<IProps, IState> {
@@ -46,15 +42,38 @@ class IndividualSearch extends React.Component<IProps, IState> {
             this.props.prepareSearch();
             getO2cmResults(fname, lname)
             .then((results) => {
-                const ret = {
-                    firstName: fname,
-                    lastName: lname,
-                    results
-                };
+                const ret = o2cmResultsToSearchType(fname, lname, results);
                 this.props.onSearch(ret);
             });
         }
     }
 };
+
+function o2cmResultsToSearchType(firstName: string, lastName: string, results: O2cmCompResults[]): IndividualSearchResults {
+    return {
+        firstName: firstName,
+        lastName: lastName,
+        competitionResults: results.map(comp => {
+            return {
+                name: comp.name,
+                id: comp.id,
+                url: `results.o2cm.com/event3.asp?event=${comp.id}`,
+                date: comp.date,
+                eventResults: comp.eventResults.map(eventResult => {
+                    const urlParams = queryString.parseUrl(eventResult.eventUrl);
+                    const compId = urlParams.query.event;
+                    const heatId = urlParams.query.heatid;
+                    return {
+                        name: eventResult.name,
+                        compId: compId,
+                        id: heatId,
+                        url: eventResult.eventUrl,
+                        placement: eventResult.placement,
+                    } as IndividualEventResults;
+                })
+            } as IndividualCompetitionResults;
+        })
+    } as IndividualSearchResults;
+}
 
 export default IndividualSearch;

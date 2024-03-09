@@ -4,7 +4,8 @@ import CalculatorInfo from './CalculatorInfo';
 import Footer from './Footer';
 import Header from './Header';
 import IndividualResults from './IndividualResults';
-import IndividualSearch, { IndividualSearchResults } from './IndividualSearch';
+import IndividualSearch from './IndividualSearch';
+import { IndividualSearchResults } from './IndividualResultTypes';
 
 interface IAppProps {
 }

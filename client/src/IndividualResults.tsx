@@ -1,7 +1,7 @@
 import React from "react";
 
 import "./IndividualResults.css";
-import { IndividualSearchResults } from "./IndividualSearch";
+import { IndividualCompetitionResults, IndividualSearchResults } from "./IndividualResultTypes";
 
 interface IIndividualSearchProps {
     initialResults: IndividualSearchResults | null;
@@ -67,16 +67,17 @@ class IndividualSearch extends React.Component<IIndividualSearchProps, IIndividu
 
         // TODO: Add results
         const resultsRows = [];
-        const results = this.props.initialResults.results;
+        const results = this.props.initialResults.competitionResults;
+        console.log(results);
         for (let resultsIdx = 0; resultsIdx < results.length; ++resultsIdx) {
             const competition = results[resultsIdx];
             let competitionName = competition.name;
             let competitionDate = competition.date.toDateString();
-            for (let eventIdx = 0; eventIdx < competition.events.length; ++eventIdx) {
-                const event = competition.events[eventIdx];
+            for (let eventIdx = 0; eventIdx < competition.eventResults.length; ++eventIdx) {
+                const event = competition.eventResults[eventIdx];
                 const eventName = event.name;
                 const placement = event.placement;
-                const eventUrl = event.eventUrl;
+                const eventUrl = event.url;
                 resultsRows.push(<tr>
                     <td>{competitionName}</td>
                     <td>{competitionDate}</td>
