@@ -75,16 +75,17 @@ class IndividualSearch extends React.Component<IIndividualSearchProps, IIndividu
             let competitionDate = competition.date.toDateString();
             for (let eventIdx = 0; eventIdx < competition.eventResults.length; ++eventIdx) {
                 const event = competition.eventResults[eventIdx];
-                const eventName = event.name;
-                const placement = event.placement;
-                const eventUrl = event.url;
-                resultsRows.push(<tr>
-                    <td>{competitionName}</td>
-                    <td>{competitionDate}</td>
-                    <td><a href={eventUrl}>{eventName}</a></td>
-                    <td>{placement}</td>
-                    <td>?</td>
-                </tr>);
+                const numRounds = event.numRounds ? event.numRounds :
+                    <div className="spinner-border spinner-border-sm" role="status" />;
+                resultsRows.push(
+                    <tr>
+                        <td><a href={competition.url}>{competitionName}</a></td>
+                        <td>{competitionDate}</td>
+                        <td><a href={event.url}>{event.name}</a></td>
+                        <td>{event.placement}</td>
+                        <td>{numRounds}</td>
+                    </tr>
+                );
                 competitionName = "";
                 competitionDate = "";
             }

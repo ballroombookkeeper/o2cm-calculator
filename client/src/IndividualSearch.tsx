@@ -57,7 +57,7 @@ function o2cmResultsToSearchType(firstName: string, lastName: string, results: O
             return {
                 name: comp.name,
                 id: comp.id,
-                url: `results.o2cm.com/event3.asp?event=${comp.id}`,
+                url: `https://results.o2cm.com/event3.asp?event=${comp.id}`,
                 date: comp.date,
                 eventResults: comp.eventResults.map(eventResult => {
                     const urlParams = queryString.parseUrl(eventResult.eventUrl);
