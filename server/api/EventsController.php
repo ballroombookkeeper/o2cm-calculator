@@ -2,27 +2,27 @@
 
 require_once "./server/api/BaseController.php";
 
-class ResultsController extends BaseController {
-    public function listByCompetitor() {
+class EventsController extends BaseController {
+    public function eventInfoByHeatId() {
         $strErrorDesc = '';
         $requestMethod = $_SERVER["REQUEST_METHOD"];
         $arrQueryStringParams = $this->getQueryStringParams();
 
         if (strtoupper($requestMethod) == 'GET') {
             if (
-                isset($arrQueryStringParams['fname'])
-                && $arrQueryStringParams['fname']
-                && isset($arrQueryStringParams['lname'])
-                && $arrQueryStringParams['lname'])
+                isset($arrQueryStringParams['compId'])
+                && $arrQueryStringParams['compId']
+                && isset($arrQueryStringParams['heatId'])
+                && $arrQueryStringParams['heatId'])
             {
-                $fname = $arrQueryStringParams['fname'];
-                $lname = $arrQueryStringParams['lname'];
-                require_once "./server/scraper/o2cm_individual_events.php";
-                $results = get_events($fname, $lname);
+                $compId = $arrQueryStringParams['compId'];
+                $heatId = $arrQueryStringParams['heatId'];
+                require_once "./server/scraper/o2cm_event.php";
+                $results = getEventInfo($compId, $heatId);
                 $responseData = json_encode($results);
             }
             else {
-                $strErrorDesc = 'fname and lname required';
+                $strErrorDesc = 'compId and heatId required';
                 $strErrorHeader = 'HTTP/1.1 400 Bad Request';
             }
         }

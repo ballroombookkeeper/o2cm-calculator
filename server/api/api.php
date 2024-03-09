@@ -11,6 +11,13 @@ function route_api_request() {
             $controller->listByCompetitor();
             return;
         }
+
+        if (isset($uri[3]) && $uri[3] == "events") {
+            require "./server/api/EventsController.php";
+            $controller = new EventsController();
+            $controller->eventInfoByHeatId();
+            return;
+        }
     }
 
     header("HTTP/1.1 404 Not Found");
