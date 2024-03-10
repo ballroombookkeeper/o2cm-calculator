@@ -1,3 +1,8 @@
+export interface EventResultKey {
+    compId: string,
+    heatId: string
+}
+
 export interface IndividualEventResults {
     name: string,
     compId: string,

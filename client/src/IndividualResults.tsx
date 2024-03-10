@@ -68,21 +68,24 @@ class IndividualSearch extends React.Component<IIndividualSearchProps, IIndividu
         // TODO: Add results
         const resultsRows = [];
         const results = this.props.initialResults.competitionResults;
-        console.log(results);
         for (let resultsIdx = 0; resultsIdx < results.length; ++resultsIdx) {
             const competition = results[resultsIdx];
             let competitionName = competition.name;
             let competitionDate = competition.date.toDateString();
             for (let eventIdx = 0; eventIdx < competition.eventResults.length; ++eventIdx) {
                 const event = competition.eventResults[eventIdx];
-                const numRounds = event.numRounds ? event.numRounds :
-                    <div className="spinner-border spinner-border-sm" role="status" />;
+                const spinner = <div className="spinner-border spinner-border-sm" role="status" />;
+                const numInFinal = event.finalSize;
+                const placementString = numInFinal && event.placement <= numInFinal ? `${event.placement}*` : event.placement;
+                const numCouples = event.numCouples ? event.numCouples : spinner;
+                const numRounds = event.numRounds ? event.numRounds : spinner;
                 resultsRows.push(
                     <tr>
                         <td><a href={competition.url}>{competitionName}</a></td>
                         <td>{competitionDate}</td>
                         <td><a href={event.url}>{event.name}</a></td>
-                        <td>{event.placement}</td>
+                        <td>{placementString}</td>
+                        <td>{numCouples}</td>
                         <td>{numRounds}</td>
                     </tr>
                 );
@@ -100,7 +103,7 @@ class IndividualSearch extends React.Component<IIndividualSearchProps, IIndividu
                 */}
 
                 <table className='table' id="results-table">
-                    <thead><tr><th>Competition</th><th>Date</th><th>Event</th><th>Placement</th><th>Rounds</th></tr></thead>
+                    <thead><tr><th>Competition</th><th>Date</th><th>Event</th><th>Placement</th><th>Couples</th><th>Rounds</th></tr></thead>
                     {resultsRows}
                 </table>
             </div>
