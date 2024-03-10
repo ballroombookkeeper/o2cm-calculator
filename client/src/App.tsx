@@ -8,6 +8,8 @@ import IndividualSearch from './IndividualSearch';
 import { EventResultKey, IndividualEventResults, IndividualSearchResults } from './IndividualResultTypes';
 import { getO2cmEventDetails } from './api';
 
+const MAX_COUPLES_PER_FINAL = 6; // TOOD: Really it is 8 but points are counted at 6th place or better
+
 interface IAppProps {
 }
 
@@ -61,13 +63,24 @@ class App extends React.Component<IAppProps, IAppState> {
     private handleSearch(searchResults: IndividualSearchResults) {
         searchResults.competitionResults.sort((comp1, comp2) => comp2.date.getTime() - comp1.date.getTime());
         const eventsByKey: Record<string, IndividualEventResults> = {};
-        const eventsToLoad: EventResultKey[] = [];
+        const eventsToLoadWithPlacement: { key: EventResultKey, placement: number, date: Date }[] = [];
         searchResults.competitionResults.forEach(competition => {
             competition.eventResults.forEach(competitionEvent => {
                 eventsByKey[getEventKey(competition.id, competitionEvent.id)] = competitionEvent;
-                eventsToLoad.push({ compId: competition.id, heatId: competitionEvent.id });
+                eventsToLoadWithPlacement.push({
+                    key: { compId: competition.id, heatId: competitionEvent.id },
+                    placement: competitionEvent.placement,
+                    date: competition.date
+                });
             });
         });
+
+        // Load results that may be point-worthy first
+        eventsToLoadWithPlacement.sort((a, b) => {
+            return (a.placement <= MAX_COUPLES_PER_FINAL ? 0 : 1) - (b.placement <= MAX_COUPLES_PER_FINAL ? 0 : 1)
+                || b.date.getTime() - a.date.getTime();
+        });
+        const eventsToLoad = eventsToLoadWithPlacement.map(event => event.key);
 
         this.setState({
             isLoading: false,
