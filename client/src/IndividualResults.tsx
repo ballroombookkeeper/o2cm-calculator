@@ -3,6 +3,7 @@ import React from "react";
 import "./IndividualResults.css";
 import { IndividualCompetitionResults, IndividualEventResults, IndividualSearchResults } from "./IndividualResultTypes";
 import { JSX } from "react/jsx-runtime";
+import { calculateYcnPoints } from "./ycn";
 
 interface IIndividualSearchProps {
     initialResults: IndividualSearchResults | null;
@@ -101,9 +102,8 @@ class IndividualSearch extends React.Component<IIndividualSearchProps, IIndividu
         });
 
         // Calculate and format results
-        ycnEvents.forEach(event => {
-
-        });
+        const ycnResults = calculateYcnPoints(ycnEvents);
+        // TODO: Display results
 
         return (
             <div className="individual-results">
