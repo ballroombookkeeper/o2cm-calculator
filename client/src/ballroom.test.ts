@@ -1,4 +1,4 @@
-import { standardizeDance, standardizeStyle, Dance, Style } from "./ballroom";
+import { standardizeDance, standardizeStyle, Dance, Style, standardizeSkill, Skill } from "./ballroom";
 
 test('vwaltz1', () => {
     const result = standardizeDance("Viennese Waltz");
@@ -54,4 +54,14 @@ test('americanquickstep_null', () => {
 test('internationalNoDance_null', () => {
     const result = standardizeStyle("international");
     expect(result).toEqual(null);
+});
+
+test('standardizeSkill_open_prechamp', () => {
+    const result = standardizeSkill("open");
+    expect(result).toBe(Skill.Prechamp);
+});
+
+test('standardizeSkill_intermediate_silver', () => {
+    const result = standardizeSkill("intermediate");
+    expect(result).toBe(Skill.Silver);
 });

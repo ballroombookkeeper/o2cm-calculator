@@ -1,12 +1,13 @@
 
-export const LEVELS = {
-    1: "Bronze",
-    2: "Silver",
-    3: "Gold",
-    4: "Novice",
-    5: "Pre-champ",
-    6: "Championship",
-};
+export enum Skill {
+    Newcomer = 0,
+    Bronze = 1,
+    Silver = 2,
+    Gold = 3,
+    Novice = 4,
+    Prechamp = 5,
+    Championship = 6,
+}
 
 export enum Style {
     Smooth = "Smooth",
@@ -113,6 +114,49 @@ export function standardizeStyle(input: string, dances?: Dance[]): Style | null 
         if (intersection.length > 0) {
             return style;
         }
+    }
+
+    return null;
+}
+
+export function standardizeSkill(input: string): Skill | null {
+    const lowerInput = input.toLowerCase();
+
+    if (lowerInput.includes("newcomer")) {
+        return Skill.Newcomer;
+    }
+
+    if (lowerInput.includes("bronze") || lowerInput.includes("beginner")) {
+        return Skill.Bronze;
+    }
+
+    if (lowerInput.includes("silver") || lowerInput.includes("intermediate")) {
+        return Skill.Silver;
+    }
+
+    if (lowerInput.includes("gold") || lowerInput.includes("advanced")) {
+        return Skill.Gold;
+    }
+
+    if (lowerInput.includes("syllabus") || lowerInput.includes("other")) {
+        return Skill.Bronze;  // TODO: Should there be a syllabus Skill level that other logic equates to Bronze?
+    }
+
+    if (lowerInput.includes("novice")) {
+        return Skill.Novice;
+    }
+
+    if (lowerInput.includes("prechamp") || lowerInput.includes("pre-champ")) {
+        return Skill.Prechamp;
+    }
+
+    if (lowerInput.includes("champ")) {
+        return Skill.Championship;
+    }
+
+    // Just in case "Open" is part of the event but not indicative of the skill, e.g. "Open Bronze", this will be at the end
+    if (lowerInput.includes("open")) {
+        return Skill.Prechamp;
     }
 
     return null;
