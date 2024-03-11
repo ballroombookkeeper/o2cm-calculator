@@ -1,7 +1,8 @@
 import React from "react";
 
 import "./IndividualResults.css";
-import { IndividualCompetitionResults, IndividualSearchResults } from "./IndividualResultTypes";
+import { IndividualCompetitionResults, IndividualEventResults, IndividualSearchResults } from "./IndividualResultTypes";
+import { JSX } from "react/jsx-runtime";
 
 interface IIndividualSearchProps {
     initialResults: IndividualSearchResults | null;
@@ -65,34 +66,45 @@ class IndividualSearch extends React.Component<IIndividualSearchProps, IIndividu
         // TODO: Sanitize search criteria
         const url = `http://results.o2cm.com/individual.asp?szFirst=${firstName}&szLast=${lastName}`;
 
-        // TODO: Add results
-        const resultsRows = [];
+        // Fetch and format all details
+        const resultsRows: React.ReactElement<any, React.JSXElementConstructor<any>>[] = [];
+        const ycnEvents: IndividualEventResults[] = [];
         const results = this.props.initialResults.competitionResults;
-        for (let resultsIdx = 0; resultsIdx < results.length; ++resultsIdx) {
-            const competition = results[resultsIdx];
+        results.forEach(competition => {
             let competitionName = competition.name;
             let competitionDate = competition.date.toDateString();
             for (let eventIdx = 0; eventIdx < competition.eventResults.length; ++eventIdx) {
                 const event = competition.eventResults[eventIdx];
                 const spinner = <div className="spinner-border spinner-border-sm" role="status" />;
                 const numInFinal = event.finalSize;
-                const placementString = numInFinal && event.placement <= numInFinal ? `${event.placement}*` : event.placement;
-                const numCouples = event.numCouples ? event.numCouples : spinner;
-                const numRounds = event.numRounds ? event.numRounds : spinner;
+                const isInFinal = numInFinal && event.placement <= numInFinal;
+                const isYcn = isInFinal && event.numRounds && ((event.numRounds >= 2 && event.placement <= 3) || (event.numRounds >= 3 && event.placement <= 6));  // TODO: Will need to calculate how many points
+                if (isYcn) {
+                    ycnEvents.push(event);
+                }
+                const placementFormatted = isInFinal ? `${event.placement}*` + (isYcn ? "*" : "") : event.placement;  // TODO: do more with this than just an asterisk
+                const numCouplesFormatted = event.numCouples ? event.numCouples : spinner;
+                const numRoundsFormatted = event.numRounds ? event.numRounds : spinner;
                 resultsRows.push(
                     <tr>
                         <td><a href={competition.url}>{competitionName}</a></td>
                         <td>{competitionDate}</td>
                         <td><a href={event.url}>{event.name}</a></td>
-                        <td>{placementString}</td>
-                        <td>{numCouples}</td>
-                        <td>{numRounds}</td>
+                        <td>{placementFormatted}</td>
+                        <td>{numCouplesFormatted}</td>
+                        <td>{numRoundsFormatted}</td>
                     </tr>
                 );
                 competitionName = "";
                 competitionDate = "";
             }
-        }
+        });
+
+        // Calculate and format results
+        ycnEvents.forEach(event => {
+
+        });
+
         return (
             <div className="individual-results">
                 <h2>Results for <a href={url}>{firstNameCapped + " " + lastNameCapped}</a></h2>
