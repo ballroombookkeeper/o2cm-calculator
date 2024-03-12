@@ -4,6 +4,7 @@ import "./IndividualResults.css";
 import { IndividualCompetitionResults, IndividualEventResults, IndividualSearchResults } from "./IndividualResultTypes";
 import { JSX } from "react/jsx-runtime";
 import { calculateYcnPoints } from "./ycn";
+import { STYLE_MAP, Skill, Style } from "./ballroom";
 
 interface IIndividualSearchProps {
     initialResults: IndividualSearchResults | null;
@@ -103,16 +104,30 @@ class IndividualSearch extends React.Component<IIndividualSearchProps, IIndividu
 
         // Calculate and format results
         const ycnResults = calculateYcnPoints(ycnEvents);
-        // TODO: Display results
+        const summaryRows: React.ReactElement<any, React.JSXElementConstructor<any>>[] = [];
+        Object.entries(Style).forEach(([_, style]) => {
+            STYLE_MAP[style].forEach((dance, idx) => {
+                const summaryCells: React.ReactElement<any, React.JSXElementConstructor<any>>[] = [];
+                const styleCell = <td>{idx === 0 ? <b>{style}</b> : ""}</td>;
+                summaryCells.push(styleCell);
+                summaryCells.push(<td>{dance}</td>);
+                Object.entries(Skill).forEach(([_, skill]) => {
+                    if (typeof skill !== "string" && skill !== Skill.Newcomer) {
+                        summaryCells.push(<td>{ycnResults[style][dance][skill]}</td>);
+                    }
+                });
+
+                summaryRows.push(<tr>{summaryCells}</tr>);
+            });
+        });
 
         return (
             <div className="individual-results">
                 <h2>Results for <a href={url}>{firstNameCapped + " " + lastNameCapped}</a></h2>
-                {/*
                 <table className='table' id="summary-table">
-                    <thead><tr><th>Totals</th><th></th><th>Bronze</th><th>Silver</th><th>Gold</th></tr></thead>
+                    <thead><tr><th>Totals</th><th></th><th>Bronze</th><th>Silver</th><th>Gold</th><th>Novice</th><th>Pre-champ</th><th>Champ</th></tr></thead>
+                    {summaryRows}
                 </table>
-                */}
 
                 <table className='table' id="results-table">
                     <thead><tr><th>Competition</th><th>Date</th><th>Event</th><th>Placement</th><th>Couples</th><th>Rounds</th></tr></thead>
