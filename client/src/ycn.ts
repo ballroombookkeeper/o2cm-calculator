@@ -49,7 +49,6 @@ export function setupEmptyResultMap(): YcnResultMap {
     );
 }
 
-// TODO: Unit test this
 export function calculateYcnPointsFromEvent(event: IndividualEventResults): YcnResult[] | null {
     const eventName = event.name;
     const skill = standardizeSkill(eventName);
