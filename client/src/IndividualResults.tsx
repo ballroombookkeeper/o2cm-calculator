@@ -1,8 +1,7 @@
 import React from "react";
 
 import "./IndividualResults.css";
-import { IndividualCompetitionResults, IndividualEventResults, IndividualSearchResults } from "./IndividualResultTypes";
-import { JSX } from "react/jsx-runtime";
+import { IndividualEventResults, IndividualSearchResults } from "./IndividualResultTypes";
 import { calculateYcnPoints } from "./ycn";
 import { STYLE_MAP, Skill, Style } from "./ballroom";
 
@@ -112,8 +111,11 @@ class IndividualSearch extends React.Component<IIndividualSearchProps, IIndividu
                 summaryCells.push(styleCell);
                 summaryCells.push(<td>{dance}</td>);
                 Object.entries(Skill).forEach(([_, skill]) => {
-                    if (typeof skill !== "string" && skill !== Skill.Newcomer) {
-                        summaryCells.push(<td>{ycnResults[style][dance][skill]}</td>);
+                    const skillMap = ycnResults[style][dance];
+                    if (typeof skill !== "string"
+                            && skillMap
+                            && skill !== Skill.Newcomer) {
+                        summaryCells.push(<td>{skillMap[skill]}</td>);
                     }
                 });
 

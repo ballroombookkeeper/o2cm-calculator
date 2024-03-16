@@ -8,11 +8,13 @@ export interface YcnResult {
     points: number;
 }
 
-export type YcnResultSkillMap = Record<Partial<Skill>, number>;
+export type YcnResultSkillMap = Record<Skill, number>;
 
-export type YcnResultDanceMap = Record<Partial<Dance>, YcnResultSkillMap>;
+export type YcnResultDanceMap = Partial<Record<Dance, YcnResultSkillMap>>;
 
-export type YcnResultMap = Record<Partial<Style>, YcnResultDanceMap>;
+export type YcnResultMap = Record<Style, YcnResultDanceMap>;
+
+export const YCN_MAX_POINTS_PER_SKILL = 7;
 
 function isNotNull<TValue>(value: TValue | null): value is TValue {
     if (value === null) {
@@ -20,6 +22,31 @@ function isNotNull<TValue>(value: TValue | null): value is TValue {
     }
     const testDummy: TValue = value;
     return true;
+}
+
+function isDefined<TValue>(value: TValue | undefined): value is TValue {
+    if (value === undefined) {
+        return false;
+    }
+    const testDummy: TValue = value;
+    return true;
+}
+
+export function setupEmptyResultMap(): YcnResultMap {
+    return Object.entries(Style).reduce(
+        (styleAcc, [_, style]) => {
+            styleAcc[style] = STYLE_MAP[style].reduce((danceAcc, dance) => {
+                danceAcc[dance] = Object.entries(Skill).reduce((skillAcc, [_, skill]) => {
+                    if (typeof skill !== "string") {
+                        skillAcc[skill] = 0;
+                    }
+                    return skillAcc;
+                }, {} as YcnResultSkillMap);
+                return danceAcc;
+            }, {} as YcnResultDanceMap);
+            return styleAcc
+        }, {} as YcnResultMap
+    );
 }
 
 // TODO: Unit test this
@@ -62,20 +89,7 @@ export function calculateYcnPointsFromEvent(event: IndividualEventResults): YcnR
 
 // TODO: Unit test this
 export function calculateYcnPoints(events: IndividualEventResults[]): YcnResultMap {
-    const pointMap: YcnResultMap = Object.entries(Style).reduce(
-        (styleAcc, [_, style]) => {
-            styleAcc[style] = STYLE_MAP[style].reduce((danceAcc, dance) => {
-                danceAcc[dance] = Object.entries(Skill).reduce((skillAcc, [_, skill]) => {
-                    if (typeof skill !== "string") {
-                        skillAcc[skill] = 0;
-                    }
-                    return skillAcc;
-                }, {} as YcnResultSkillMap);
-                return danceAcc;
-            }, {} as YcnResultDanceMap);
-            return styleAcc
-        }, {} as YcnResultMap
-    );
+    const pointMap = setupEmptyResultMap();
 
     events.forEach(event => {
         const ycnPoints = calculateYcnPointsFromEvent(event);
@@ -84,18 +98,50 @@ export function calculateYcnPoints(events: IndividualEventResults[]): YcnResultM
         }
 
         ycnPoints.forEach(ycn => {
-            // TODO: Possibly worth verifying all these keys work
-            pointMap[ycn.style][ycn.dance][ycn.skill] += ycn.points;
-            if (ycn.skill.valueOf() >= 1) {
-                let previousSkill: Skill = ycn.skill - 1;
-                pointMap[ycn.style][ycn.dance][previousSkill] += ycn.points * 2;
-                for (let i = ycn.skill.valueOf() - 2; i >= 0; --i) {
-                    previousSkill = i;
-                    pointMap[ycn.style][ycn.dance][previousSkill] += 7;
+            const skillMap = pointMap[ycn.style][ycn.dance];
+            if (skillMap !== undefined) {
+                skillMap[ycn.skill] += ycn.points;
+                if (ycn.skill.valueOf() >= 1) {
+                    let previousSkill: Skill = ycn.skill - 1;
+                    skillMap[previousSkill] += ycn.points * 2;
+                    for (let i = ycn.skill.valueOf() - 2; i >= 0; --i) {
+                        previousSkill = i;
+                        skillMap[previousSkill] += YCN_MAX_POINTS_PER_SKILL;
+                    }
                 }
             }
         });
     });
 
     return pointMap;
+}
+
+export function getMaxDanceableLevelByStyle(ycnResults: YcnResultMap): Record<Style, Skill> {
+    const maxLevelByStyle = Object.entries(Style).reduce((styleAcc, [_, style]) => {
+        let maxSkillForStyle = Skill.Newcomer;
+
+        const styleResults = ycnResults[style];
+        STYLE_MAP[style].forEach((dance) => {
+            let maxSkillForDance = Skill.Championship;
+            for (const [_, skill] of Object.entries(Skill).reverse()) {
+                const skillMap = styleResults[dance];
+                if (typeof skill !== "string" && skillMap) {
+                    const skillPoints = skillMap[skill];
+                    if (skillPoints >= YCN_MAX_POINTS_PER_SKILL) {
+                        break;
+                    }
+                    maxSkillForDance = skill;
+                }
+            }
+            if (maxSkillForDance > maxSkillForStyle) {
+                maxSkillForStyle = maxSkillForDance;
+            }
+        });
+
+        styleAcc[style] = maxSkillForStyle;
+
+        return styleAcc;
+    }, {} as Record<Style, Skill>);
+
+    return maxLevelByStyle;
 }
