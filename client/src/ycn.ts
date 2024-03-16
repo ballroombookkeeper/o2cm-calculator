@@ -8,11 +8,11 @@ export interface YcnResult {
     points: number;
 }
 
-export type YcnResultSkillMap = { [key in Skill]: number };
+export type YcnResultSkillMap = Record<Partial<Skill>, number>;
 
-export type YcnResultDanceMap = { [key in Dance]: YcnResultSkillMap };
+export type YcnResultDanceMap = Record<Partial<Dance>, YcnResultSkillMap>;
 
-export type YcnResultMap = { [key in Style]: YcnResultDanceMap };
+export type YcnResultMap = Record<Partial<Style>, YcnResultDanceMap>;
 
 function isNotNull<TValue>(value: TValue | null): value is TValue {
     if (value === null) {
