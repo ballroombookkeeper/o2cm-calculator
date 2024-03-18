@@ -2,7 +2,7 @@ import React from "react";
 
 import "./IndividualResults.css";
 import { IndividualEventResults, IndividualSearchResults } from "./IndividualResultTypes";
-import { calculateYcnPoints } from "./ycn";
+import { calculateYcnPoints, getMaxDanceableLevelByStyle } from "./ycn";
 import { STYLE_MAP, Skill, Style } from "./ballroom";
 
 interface IIndividualSearchProps {
@@ -123,9 +123,25 @@ class IndividualSearch extends React.Component<IIndividualSearchProps, IIndividu
             });
         });
 
+        const styleSummaryTableHeaderCells: React.ReactElement<any, React.JSXElementConstructor<any>>[] = [];
+        const styleSummaryTableCells: React.ReactElement<any, React.JSXElementConstructor<any>>[] = [];
+        const styleSummary = getMaxDanceableLevelByStyle(ycnResults);
+        Object.entries(Style).forEach(([_, style]) => {
+            styleSummaryTableHeaderCells.push(<th>{style}</th>);
+            styleSummaryTableCells.push(<td>{Skill[styleSummary[style]]}</td>);
+        });
+        const styleSummaryTable = (<table className='table' id="style-summary-table">
+            <thead><tr>{styleSummaryTableHeaderCells}</tr></thead>
+            <tr>{styleSummaryTableCells}</tr>
+            </table>);
+
+        // TODO: Add super-summary, summarizing max skill level per style
         return (
             <div className="individual-results">
                 <h2>Results for <a href={url}>{firstNameCapped + " " + lastNameCapped}</a></h2>
+
+                {styleSummaryTable}
+
                 <table className='table' id="summary-table">
                     <thead><tr><th>Totals</th><th></th><th>Bronze</th><th>Silver</th><th>Gold</th><th>Novice</th><th>Pre-champ</th><th>Champ</th></tr></thead>
                     {summaryRows}
