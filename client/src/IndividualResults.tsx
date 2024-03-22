@@ -5,48 +5,46 @@ import { IndividualEventResults, IndividualSearchResults } from "./IndividualRes
 import { calculateYcnPoints, getMaxDanceableLevelByStyle } from "./ycn";
 import { STYLE_MAP, Skill, Style } from "./ballroom";
 
-interface IIndividualSearchProps {
-    initialResults: IndividualSearchResults | null;
-    isLoading: boolean;
-}
-
 interface IIndividualSearchState {
     initialResults: IndividualSearchResults | null;
-    isLoading: boolean;
+    isInitialLoading: boolean;
+    isLoadingYcn: boolean;
 }
 
 function capitalizeFirstLetter(inp: string): string {
     return inp.charAt(0).toUpperCase() + inp.slice(1);
 }
 
-class IndividualSearch extends React.Component<IIndividualSearchProps, IIndividualSearchState> {
+class IndividualSearch extends React.Component<IIndividualSearchState, IIndividualSearchState> {
 
-    constructor(props: IIndividualSearchProps) {
+    constructor(props: IIndividualSearchState) {
         super(props);
         this.state = {
             initialResults: null,
-            isLoading: false
+            isInitialLoading: false,
+            isLoadingYcn: false
         };
     }
 
-    static getDerivedStateFromProps(props: IIndividualSearchProps, state: IIndividualSearchState) {
+    static getDerivedStateFromProps(props: IIndividualSearchState, state: IIndividualSearchState) {
         // TODO: There are probably better ways to check if things have changed
-        if (props.isLoading !== state.isLoading) {
+        if (props.isInitialLoading !== state.isInitialLoading) {
             return {
-                isLoading: props.isLoading
+                isLoading: props.isInitialLoading
             };
         }
 
         if (props.initialResults) {
             return {
-                initialResults: props.initialResults
+                initialResults: props.initialResults,
+                isLoadingYcn: props.isLoadingYcn
             };
         }
         return null;
     }
 
     render() {
-        if (this.props.isLoading) {
+        if (this.props.isInitialLoading) {
             return (
                 <div className="individual-results">
                     <progress value="null" />
@@ -58,9 +56,10 @@ class IndividualSearch extends React.Component<IIndividualSearchProps, IIndividu
             return <div className="individual-results"></div>;
         }
 
+        const spinner = <div className="spinner-border spinner-border-sm" role="status" />;
+
         const firstName = this.props.initialResults.firstName;
         const lastName = this.props.initialResults.lastName;
-
         const firstNameCapped = capitalizeFirstLetter(firstName);
         const lastNameCapped = capitalizeFirstLetter(lastName);
 
@@ -76,7 +75,6 @@ class IndividualSearch extends React.Component<IIndividualSearchProps, IIndividu
             let competitionDate = competition.date.toDateString();
             for (let eventIdx = 0; eventIdx < competition.eventResults.length; ++eventIdx) {
                 const event = competition.eventResults[eventIdx];
-                const spinner = <div className="spinner-border spinner-border-sm" role="status" />;
                 const numInFinal = event.finalSize;
                 const isInFinal = numInFinal && event.placement <= numInFinal;
                 const isYcn = isInFinal && event.numRounds && ((event.numRounds >= 2 && event.placement <= 3) || (event.numRounds >= 3 && event.placement <= 6));  // TODO: Will need to calculate how many points
@@ -130,27 +128,44 @@ class IndividualSearch extends React.Component<IIndividualSearchProps, IIndividu
             styleSummaryTableHeaderCells.push(<th>{style}</th>);
             styleSummaryTableCells.push(<td>{Skill[styleSummary[style]]}</td>);
         });
-        const styleSummaryTable = (<table className='table' id="style-summary-table">
+        const styleSummaryTable = (<table className='table table-hover' id="style-summary-table">
             <thead><tr>{styleSummaryTableHeaderCells}</tr></thead>
-            <tr>{styleSummaryTableCells}</tr>
+            <tbody>
+                <tr>{styleSummaryTableCells}</tr>
+            </tbody>
             </table>);
+
+        const calculatingYcnPointsIndicator = <div className="ycn-loading-indicator">
+            <span className="ycn-loading-indicator-text">Calculating YCN Points...</span>
+            {spinner}
+        </div>;
 
         // TODO: Add super-summary, summarizing max skill level per style
         return (
             <div className="individual-results">
                 <h2>Results for <a href={url}>{firstNameCapped + " " + lastNameCapped}</a></h2>
 
+                {this.state.isLoadingYcn ? calculatingYcnPointsIndicator : ""}
+
                 {styleSummaryTable}
 
-                <table className='table' id="summary-table">
-                    <thead><tr><th>Totals</th><th></th><th>Bronze</th><th>Silver</th><th>Gold</th><th>Novice</th><th>Pre-champ</th><th>Champ</th></tr></thead>
-                    {summaryRows}
-                </table>
+                <div className="table-responsive">
+                    <table className='table table-hover' id="summary-table">
+                        <thead><tr><th>Totals</th><th></th><th>Bronze</th><th>Silver</th><th>Gold</th><th>Novice</th><th>Pre-champ</th><th>Champ</th></tr></thead>
+                        <tbody>
+                            {summaryRows}
+                        </tbody>
+                    </table>
+                </div>
 
-                <table className='table' id="results-table">
-                    <thead><tr><th>Competition</th><th>Date</th><th>Event</th><th>Placement</th><th>Couples</th><th>Rounds</th></tr></thead>
-                    {resultsRows}
-                </table>
+                <div className="table-responsive">
+                    <table className='table table-hover' id="results-table">
+                        <thead><tr><th>Competition</th><th>Date</th><th>Event</th><th>Placement</th><th>Couples</th><th>Rounds</th></tr></thead>
+                        <tbody>
+                            {resultsRows}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         );
     }

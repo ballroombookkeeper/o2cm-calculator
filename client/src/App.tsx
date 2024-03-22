@@ -19,6 +19,7 @@ interface IAppState {
     isLoading: boolean;
     eventsToLoad: EventResultKey[];
     loadedEvents: Set<readonly [string, string]>;
+    numFinalsToLoad: number;
 }
 
 class App extends React.Component<IAppProps, IAppState> {
@@ -30,7 +31,8 @@ class App extends React.Component<IAppProps, IAppState> {
             isLoading: false,
             eventsToLoad: [],
             loadedEvents: new Set(),
-            resultsByHeat: {}
+            resultsByHeat: {},
+            numFinalsToLoad: 0
         };
     }
 
@@ -44,7 +46,7 @@ class App extends React.Component<IAppProps, IAppState> {
 
                     <IndividualSearch prepareSearch={this.prepareSearch.bind(this)} onSearch={this.handleSearch.bind(this)} />
 
-                    <IndividualResults isLoading={this.state.isLoading} initialResults={this.state.results}/>
+                    <IndividualResults isInitialLoading={this.state.isLoading} initialResults={this.state.results} isLoadingYcn={this.state.numFinalsToLoad > 0} />
 
                     <CalculatorInfo />
                 </div>
@@ -76,18 +78,21 @@ class App extends React.Component<IAppProps, IAppState> {
         });
 
         // Load results that may be point-worthy first
+        // TODO: Filter somehow to determine if all point-worthy comps have been loaded, passing that flag to the component
         eventsToLoadWithPlacement.sort((a, b) => {
             return (a.placement <= MAX_COUPLES_PER_FINAL ? 0 : 1) - (b.placement <= MAX_COUPLES_PER_FINAL ? 0 : 1)
                 || b.date.getTime() - a.date.getTime();
         });
         const eventsToLoad = eventsToLoadWithPlacement.map(event => event.key);
+        const numFinalsToLoad = eventsToLoadWithPlacement.filter(e => e.placement <= MAX_COUPLES_PER_FINAL).length;
 
         this.setState({
             isLoading: false,
             results: searchResults,
             eventsToLoad: eventsToLoad,
             loadedEvents: new Set(),
-            resultsByHeat: eventsByKey
+            resultsByHeat: eventsByKey,
+            numFinalsToLoad: numFinalsToLoad
         }, this.loadEvent.bind(this));  // TODO: Worth doing more than one at a times
     }
 
@@ -110,9 +115,14 @@ class App extends React.Component<IAppProps, IAppState> {
             storedResult.finalSize = eventDetails.finalSize;
             storedResult.numCouples = eventDetails.numCouples;
             storedResult.numRounds = eventDetails.numRounds;
+            let numFinalsToLoad = this.state.numFinalsToLoad;
+            if (storedResult.placement <= MAX_COUPLES_PER_FINAL) {
+                --numFinalsToLoad;
+            }
             this.setState(state => ({
                 eventsToLoad: eventsToLoad,
                 loadedEvents: loadedEvents,
+                numFinalsToLoad: numFinalsToLoad
             }), this.loadEvent.bind(this));
         });
     }
