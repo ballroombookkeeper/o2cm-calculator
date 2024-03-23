@@ -13,9 +13,7 @@ This was created as a replacement to http://ballroom.union.rpi.edu/calculator wh
 ## Building
 
 ```sh
-$ cd client
-$ npm run build
-$ cd ..
+$ make build
 ```
 
 ## Running locally
@@ -23,11 +21,15 @@ $ cd ..
 ### Run server
 
 ```sh
-$ php -S localhost:8080 server/router.php
+$ make run
 ```
 
 And then open https://localhost:8080
 
 ## Deployment
 
-TBD
+```sh
+$ make publish
+```
+
+and then copy the contents of `.publish` to your webserver (likely in a `public_html` folder).
