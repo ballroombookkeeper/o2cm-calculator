@@ -2,7 +2,7 @@ import React from "react";
 
 import "./IndividualResults.css";
 import { IndividualEventResults, IndividualSearchResults } from "./IndividualResultTypes";
-import { calculateYcnPoints, getMaxDanceableLevelByStyle } from "./ycn";
+import { MAX_COUPLES_PER_FINAL, calculateYcnPoints, getMaxDanceableLevelByStyle } from "./ycn";
 import { STYLE_MAP, Skill, Style } from "./ballroom";
 
 interface IIndividualSearchState {
@@ -80,7 +80,7 @@ class IndividualSearch extends React.Component<IIndividualSearchState, IIndividu
                 const event = competition.eventResults[eventIdx];
                 const numInFinal = event.finalSize;
                 const isInFinal = numInFinal && event.placement <= numInFinal;
-                const isYcn = isInFinal && event.numRounds && ((event.numRounds >= 2 && event.placement <= 3) || (event.numRounds >= 3 && event.placement <= 6));  // TODO: Will need to calculate how many points
+                const isYcn = isInFinal && event.numRounds && ((event.numRounds >= 2 && event.placement <= 3) || (event.numRounds >= 3 && event.placement <= MAX_COUPLES_PER_FINAL));
                 if (isYcn) {
                     ycnEvents.push(event);
                 }

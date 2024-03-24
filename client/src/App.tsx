@@ -7,8 +7,7 @@ import IndividualResults from './IndividualResults';
 import IndividualSearch from './IndividualSearch';
 import { EventResultKey, IndividualEventResults, IndividualSearchResults } from './IndividualResultTypes';
 import { getO2cmEventDetails } from './api';
-
-const MAX_COUPLES_PER_FINAL = 6; // TODO: Really it is 8 but points are counted at 6th place or better
+import { MAX_COUPLES_PER_FINAL as YCN_MAX_COUPLES_PER_FINAL } from './ycn';
 
 interface IAppProps {
 }
@@ -79,11 +78,11 @@ class App extends React.Component<IAppProps, IAppState> {
 
         // Load results that may be point-worthy first
         eventsToLoadWithPlacement.sort((a, b) => {
-            return (a.placement <= MAX_COUPLES_PER_FINAL ? 0 : 1) - (b.placement <= MAX_COUPLES_PER_FINAL ? 0 : 1)
+            return (a.placement <= YCN_MAX_COUPLES_PER_FINAL ? 0 : 1) - (b.placement <= YCN_MAX_COUPLES_PER_FINAL ? 0 : 1)
                 || b.date.getTime() - a.date.getTime();
         });
         const eventsToLoad = eventsToLoadWithPlacement.map(event => event.key);
-        const numFinalsToLoad = eventsToLoadWithPlacement.filter(e => e.placement <= MAX_COUPLES_PER_FINAL).length;
+        const numFinalsToLoad = eventsToLoadWithPlacement.filter(e => e.placement <= YCN_MAX_COUPLES_PER_FINAL).length;
 
         this.setState({
             isLoading: false,
@@ -115,7 +114,7 @@ class App extends React.Component<IAppProps, IAppState> {
             storedResult.numCouples = eventDetails.numCouples;
             storedResult.numRounds = eventDetails.numRounds;
             let numFinalsToLoad = this.state.numFinalsToLoad;
-            if (storedResult.placement <= MAX_COUPLES_PER_FINAL) {
+            if (storedResult.placement <= YCN_MAX_COUPLES_PER_FINAL) {
                 --numFinalsToLoad;
             }
             this.setState(state => ({

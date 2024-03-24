@@ -14,6 +14,7 @@ export type YcnResultDanceMap = Partial<Record<Dance, YcnResultSkillMap>>;
 
 export type YcnResultMap = Record<Style, YcnResultDanceMap>;
 
+export const MAX_COUPLES_PER_FINAL = 6;
 export const YCN_MAX_POINTS_PER_SKILL = 7;
 
 function isNotNull<TValue>(value: TValue | null): value is TValue {
@@ -67,7 +68,7 @@ export function calculateYcnPointsFromEvent(event: IndividualEventResults): YcnR
     else if (placement === 2) {
         numPoints = 2;
     }
-    else if (placement === 3 || (placement <= 6 && numRounds >= 3)) {
+    else if (placement === 3 || (placement <= MAX_COUPLES_PER_FINAL && numRounds >= 3)) {
         numPoints = 1;
     }
 
