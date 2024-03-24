@@ -19,13 +19,16 @@ export default function CalculatorInfo() {
             <p>
                 <b>
                     Please be advised that this is not an official point calculator.
-                </b>
+                </b>&nbsp;
                 As this website uses data directly from <a href="https://o2cm.com/">O2CM</a> and does not pull data from other sources (such as <a href="http://www.dance.zsconcepts.com/results/">dance.zsconcepts.com</a>),
                 points may be missing from some events.
                 Addtionally, though we may try our best to be accurate, points may also be added from events (such as "Open Bronze") that are not meant to give points.
             </p>
             <p>
                 As data is pulled directly from O2CM, your name must be spelled <strong>EXACTLY</strong> like it is shown on O2CM.
+            </p>
+            <p>
+                If you find bugs or are interested in contributing, check out <a href="https://github.com/ballroombookkeeper/o2cm-calculator/blob/main/CONTRIBUTING.md">how to contribute</a>!
             </p>
         </div>
     );
