@@ -46,7 +46,7 @@ class App extends React.Component<IAppProps, IAppState> {
 
                     <IndividualSearch prepareSearch={this.prepareSearch.bind(this)} onSearch={this.handleSearch.bind(this)} />
 
-                    <IndividualResults isInitialLoading={this.state.isLoading} initialResults={this.state.results} isLoadingYcn={this.state.numFinalsToLoad > 0} />
+                    <IndividualResults isInitialLoading={this.state.isLoading} initialResults={this.state.results} numYcnRemaining={this.state.numFinalsToLoad} />
 
                     <CalculatorInfo />
                 </div>

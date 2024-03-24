@@ -8,7 +8,7 @@ import { STYLE_MAP, Skill, Style } from "./ballroom";
 interface IIndividualSearchState {
     initialResults: IndividualSearchResults | null;
     isInitialLoading: boolean;
-    isLoadingYcn: boolean;
+    numYcnRemaining: number;
 }
 
 const SPINNER = <div className="spinner-border spinner-border-sm" role="status" />;
@@ -24,7 +24,7 @@ class IndividualSearch extends React.Component<IIndividualSearchState, IIndividu
         this.state = {
             initialResults: null,
             isInitialLoading: false,
-            isLoadingYcn: false
+            numYcnRemaining: 0
         };
     }
 
@@ -39,7 +39,7 @@ class IndividualSearch extends React.Component<IIndividualSearchState, IIndividu
         if (props.initialResults) {
             return {
                 initialResults: props.initialResults,
-                isLoadingYcn: props.isLoadingYcn
+                numYcnRemaining: props.numYcnRemaining
             };
         }
         return null;
@@ -67,7 +67,6 @@ class IndividualSearch extends React.Component<IIndividualSearchState, IIndividu
         const firstNameUrlSafe = encodeURIComponent(firstName.replace("'", "`"));
         const lastNameUrlSafe = encodeURIComponent(lastName.replace("'", "`"))
 
-        // TODO: Sanitize search criteria
         const url = `http://results.o2cm.com/individual.asp?szFirst=${firstNameUrlSafe}&szLast=${lastNameUrlSafe}`;
 
         // Fetch and format all details
@@ -139,17 +138,17 @@ class IndividualSearch extends React.Component<IIndividualSearchState, IIndividu
             </tbody>
             </table>);
 
+        const eventsToCalculateRemaining = this.state.numYcnRemaining;
         const calculatingYcnPointsIndicator = <div className="ycn-loading-indicator">
-            <span className="ycn-loading-indicator-text">Calculating YCN Points...</span>
+            <span className="ycn-loading-indicator-text">Calculating YCN Points ({eventsToCalculateRemaining} remaining)...</span>
             {SPINNER}
         </div>;
 
-        // TODO: Add super-summary, summarizing max skill level per style
         return (
             <div className="individual-results">
                 <h2>Results for <a href={url}>{firstNameCapped + " " + lastNameCapped}</a></h2>
 
-                {this.state.isLoadingYcn ? calculatingYcnPointsIndicator : ""}
+                {eventsToCalculateRemaining > 0 ? calculatingYcnPointsIndicator : ""}
 
                 {styleSummaryTable}
 
