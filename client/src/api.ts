@@ -29,8 +29,7 @@ interface raw_o2cm_comp_results {
 }
 
 export function getO2cmResults(firstName: string, lastName: string): Promise<O2cmCompResults[]> {
-    // TODO: Sanitize inputs
-    return fetch(`/api/o2cm/results?fname=${firstName}&lname=${lastName}`)
+    return fetch(`/api/o2cm/results?fname=${encodeURIComponent(firstName)}&lname=${encodeURIComponent(lastName)}`)
         .then(res => res.json())
         .then((res: raw_o2cm_comp_results[]) => {
             return res.map(rawResult => {
@@ -45,8 +44,7 @@ export function getO2cmResults(firstName: string, lastName: string): Promise<O2c
 }
 
 export function getO2cmEventDetails(compId: string, heatId: string): Promise<O2cmEventDetails> {
-    // TODO: Sanitize inputs
-    return fetch(`/api/o2cm/events?compId=${compId}&heatId=${heatId}`)
+    return fetch(`/api/o2cm/events?compId=${encodeURIComponent(compId)}&heatId=${encodeURIComponent(heatId)}`)
         .then(res => res.json())
         .then(res => { return res as O2cmEventDetails; });
 }

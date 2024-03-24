@@ -8,7 +8,7 @@ import IndividualSearch from './IndividualSearch';
 import { EventResultKey, IndividualEventResults, IndividualSearchResults } from './IndividualResultTypes';
 import { getO2cmEventDetails } from './api';
 
-const MAX_COUPLES_PER_FINAL = 6; // TOOD: Really it is 8 but points are counted at 6th place or better
+const MAX_COUPLES_PER_FINAL = 6; // TODO: Really it is 8 but points are counted at 6th place or better
 
 interface IAppProps {
 }
@@ -78,7 +78,6 @@ class App extends React.Component<IAppProps, IAppState> {
         });
 
         // Load results that may be point-worthy first
-        // TODO: Filter somehow to determine if all point-worthy comps have been loaded, passing that flag to the component
         eventsToLoadWithPlacement.sort((a, b) => {
             return (a.placement <= MAX_COUPLES_PER_FINAL ? 0 : 1) - (b.placement <= MAX_COUPLES_PER_FINAL ? 0 : 1)
                 || b.date.getTime() - a.date.getTime();

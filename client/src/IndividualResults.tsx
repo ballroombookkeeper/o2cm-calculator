@@ -11,6 +11,8 @@ interface IIndividualSearchState {
     isLoadingYcn: boolean;
 }
 
+const SPINNER = <div className="spinner-border spinner-border-sm" role="status" />;
+
 function capitalizeFirstLetter(inp: string): string {
     return inp.charAt(0).toUpperCase() + inp.slice(1);
 }
@@ -47,7 +49,8 @@ class IndividualSearch extends React.Component<IIndividualSearchState, IIndividu
         if (this.props.isInitialLoading) {
             return (
                 <div className="individual-results">
-                    <progress value="null" />
+                    <span className="ycn-loading-indicator-text">Fetching results from o2cm...</span>
+                    {SPINNER}
                 </div>
             );
         }
@@ -56,15 +59,16 @@ class IndividualSearch extends React.Component<IIndividualSearchState, IIndividu
             return <div className="individual-results"></div>;
         }
 
-        const spinner = <div className="spinner-border spinner-border-sm" role="status" />;
 
         const firstName = this.props.initialResults.firstName;
         const lastName = this.props.initialResults.lastName;
         const firstNameCapped = capitalizeFirstLetter(firstName);
         const lastNameCapped = capitalizeFirstLetter(lastName);
+        const firstNameUrlSafe = encodeURIComponent(firstName.replace("'", "`"));
+        const lastNameUrlSafe = encodeURIComponent(lastName.replace("'", "`"))
 
         // TODO: Sanitize search criteria
-        const url = `http://results.o2cm.com/individual.asp?szFirst=${firstName}&szLast=${lastName}`;
+        const url = `http://results.o2cm.com/individual.asp?szFirst=${firstNameUrlSafe}&szLast=${lastNameUrlSafe}`;
 
         // Fetch and format all details
         const resultsRows: React.ReactElement<any, React.JSXElementConstructor<any>>[] = [];
@@ -82,8 +86,8 @@ class IndividualSearch extends React.Component<IIndividualSearchState, IIndividu
                     ycnEvents.push(event);
                 }
                 const placementFormatted = isInFinal ? `${event.placement}*` + (isYcn ? "*" : "") : event.placement;  // TODO: do more with this than just an asterisk
-                const numCouplesFormatted = event.numCouples ? event.numCouples : spinner;
-                const numRoundsFormatted = event.numRounds ? event.numRounds : spinner;
+                const numCouplesFormatted = event.numCouples ? event.numCouples : SPINNER;
+                const numRoundsFormatted = event.numRounds ? event.numRounds : SPINNER;
                 resultsRows.push(
                     <tr>
                         <td><a href={competition.url}>{competitionName}</a></td>
@@ -137,7 +141,7 @@ class IndividualSearch extends React.Component<IIndividualSearchState, IIndividu
 
         const calculatingYcnPointsIndicator = <div className="ycn-loading-indicator">
             <span className="ycn-loading-indicator-text">Calculating YCN Points...</span>
-            {spinner}
+            {SPINNER}
         </div>;
 
         // TODO: Add super-summary, summarizing max skill level per style

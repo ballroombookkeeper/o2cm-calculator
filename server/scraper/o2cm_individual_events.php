@@ -22,10 +22,8 @@ class CompetitionResult {
 
 function getPersonO2cmUrl(string $firstName, string $lastName): string {
     $url = "http://results.o2cm.com/individual.asp";
-    $fnameFormName = "szFirst";
-    $lnameFormName = "szLast";
-    $url .= "?" . $lnameFormName . "=" . $lastName;
-    $url .= "&" . $fnameFormName . "=" . $firstName;
+    $url .= "?szLast=" . str_replace("'", "`", str_replace(" ", "+", $lastName));
+    $url .= "&szFirst=" . str_replace("'", "`", str_replace(" ", "+", $firstName));
     return $url;
 }
 
